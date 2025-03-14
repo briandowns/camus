@@ -1,14 +1,8 @@
 # Camus
 
-[![Build Status](https://travis-ci.org/briandowns/camus.svg?branch=master)](https://travis-ci.org/briandowns/flotsam)
+[![Build and Deploy](https://github.com/briandowns/camus/actions/workflows/main.yml/badge.svg)](https://github.com/briandowns/camus/actions/workflows/main.yml/badge.svg)
 
-Camus is a small dev server that can be used with any projects who's build is orchestrated with Make.
-
-## Test
-
-```sh
-make test
-```
+Camus is a small dev server for C code.
 
 ## Installation
 
@@ -22,7 +16,7 @@ Please feel free to open a PR!
 
 ## License
 
-flotsam source code is available under the BSD 2 clause [License](/LICENSE).
+camus source code is available under the BSD 2 clause [License](/LICENSE).
 
 ## Contact
 

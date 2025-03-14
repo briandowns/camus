@@ -1,0 +1,11 @@
+./*.c
+./*.h
+*.o
+*.so
+*.dynlib
+
+.vscode/*
+
+bin
+test/test
+.vscode

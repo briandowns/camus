@@ -27,6 +27,7 @@
 
 #include <signal.h>
 #include <stdbool.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -37,9 +38,10 @@
 #define STR1(x) #x
 #define STR(x) STR1(x)
 
-#define EVENT_SIZE  (sizeof(struct inotify_event))
-#define BUF_LEN     (1024 * (EVENT_SIZE + 16))
-#define MAX_CMD_LEN 70
+#define EVENT_SIZE            (sizeof(struct inotify_event))
+#define BUF_LEN               (1024 * (EVENT_SIZE + 16))
+#define MAX_CMD_LEN           70
+#define IGNORED_FILE_EXTS_LEN 12
 
 #define USAGE                 \
     "usage: %s [-vh]\n"       \
@@ -47,8 +49,18 @@
     "  -h          help\n"    \
     "  -t          target\n"
 
+
+static char *ignored_file_exts[IGNORED_FILE_EXTS_LEN] = {
+    "git",
+    "md",
+    "json", "yml", "yaml",
+    "txt", "doc", "docx",
+    "xls", "xlsx",
+    "ppt", "pptx"
+};
+
 bool
-valid_file_type(const char *filename)
+ignored_file_type(const char *filename)
 {
     if (filename == NULL) {
         return false;
@@ -59,7 +71,13 @@ valid_file_type(const char *filename)
         return false;
     }
 
-    return (strcmp(dot + 1, "c") == 0) || (strcmp(dot + 1, "h") == 0);
+    for (uint8_t i = 0; i < IGNORED_FILE_EXTS_LEN; i++) {
+        if (strcmp(dot+1, ignored_file_exts[i]) == 0) {
+            return true;
+        }
+    }
+
+    return false;
 }
 
 void
@@ -125,7 +143,7 @@ main(int argc, char **argv)
     
         struct inotify_event *event = (struct inotify_event *) &buffer[i];
         if (event->len) {
-            if (!valid_file_type(event->name)) {
+            if (ignored_file_type(event->name)) {
                 continue;
             }
 
@@ -137,11 +155,7 @@ main(int argc, char **argv)
                     strncat(cmd, target, MAX_CMD_LEN-6);
                 }
 
-                int r = system(cmd);
-                if (r != 0) {
-                    fprintf(stderr, "it failed...");
-                    return 1;
-                }
+                system(cmd);
             }
         }
     }

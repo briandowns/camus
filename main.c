@@ -71,7 +71,7 @@ ignored_file_exts[IGNORED_FILE_EXTS_LEN] = {
 
 static char*
 ignored_dirs[IGNORED_DIRS_LEN] = {
-    "./.git", "./.github", "./bin"
+     "./bin", "./.github", "./.git"
 };
 
 int i_fd, wd;

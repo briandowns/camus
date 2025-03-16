@@ -18,10 +18,10 @@ Tell Camus the target you want ran is "test". Camus will run `make test` when it
 camus -t test
 ```
 
-## Installation
+## Build and Installation
 
 ```sh
-make install
+make && sudo make install
 ```
 
 ## Contributing

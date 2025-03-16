@@ -71,11 +71,14 @@ ignored_file_exts[IGNORED_FILE_EXTS_LEN] = {
 
 static char*
 ignored_dirs[IGNORED_DIRS_LEN] = {
-     "./bin", "./.github", "./.git"
+    "./bin", "./.github", "./.git"
 };
 
 int i_fd, wd;
 
+/**
+ * ignored_file_type 
+ */
 bool
 ignored_file_type(const char *filename)
 {
@@ -97,6 +100,10 @@ ignored_file_type(const char *filename)
     return false;
 }
 
+/**
+ * ignored_directory receives a directory name and checks it against the lit of
+ * directories to ignore.
+ */
 bool
 ignored_directory(const char *name)
 {
@@ -109,6 +116,9 @@ ignored_directory(const char *name)
     return false;
 }
 
+/**
+ * mon_dir 
+ */
 static int
 mon_dir(const char *fpath, const struct stat *sb, int typeflag, struct FTW *ftwbuf)
 {
@@ -119,15 +129,17 @@ mon_dir(const char *fpath, const struct stat *sb, int typeflag, struct FTW *ftwb
 
         wd = inotify_add_watch(i_fd, fpath, IN_CREATE | IN_DELETE | IN_MODIFY);
         if (wd == -1) {
-            perror("inotify_add_watch");
+            fprintf(stderr, "inotify_add_watch\n");
             return 1;
         }
-        printf("Watching: %s\n", fpath);
     }
 
     return 0;
 }
 
+/**
+ * handle_signal 
+ */
 void
 handle_signal(int sig)
 {
@@ -135,7 +147,7 @@ handle_signal(int sig)
 
     }
     switch (sig) {
-    case SIGINT:
+    case SIGINT ... SIGKILL:
         printf("\nshutting down camus...\n");
     }
     exit(0);
@@ -152,8 +164,8 @@ main(int argc, char **argv)
 
     for (int i = 1; i < argc; i++) {
         if (strcmp(argv[i], "-v") == 0) {
-            printf("version: %s - git: %s\n", STR(camus_version),
-                   STR(git_sha));
+            printf("version: %s -  git: %s\n", STR(camus_version),
+                                               STR(git_sha));
             return 0;
         }
         if (strcmp(argv[i], "-h") == 0) {
@@ -182,7 +194,7 @@ main(int argc, char **argv)
     }
 
     if (nftw(".", mon_dir, 20, FTW_PHYS) == -1) {
-        perror("nftw");
+        fprintf(stderr, "ntfw failed to parse dir tree\n");
         close(i_fd);
         return 1;
     }

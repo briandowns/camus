@@ -5,10 +5,17 @@ RUN apk update && apk upgrade && \
         ca-certificates \
         make \
         gcc \
-        musl-dev
+        musl-dev \
+        linux-headers
 
 COPY . .
 RUN make
 
-FROM scratch
-COPY --from=builder bin/camus .
+FROM alpine
+RUN apk update && apk upgrade && \
+    apk add --no-cache \
+        ca-certificates \
+        make
+COPY --from=builder bin/camus /usr/bin
+
+ENTRYPOINT [ "camus" ]
